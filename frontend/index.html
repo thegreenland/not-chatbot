@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TGL NotChatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+
+    <!-- NICKNAME MODAL -->
+    <div id="nickname-modal" class="modal-overlay" hidden>
+      <div class="modal">
+        <div class="modal-emoji">👋</div>
+        <h3 id="nickname-modal-title">Welkom!</h3>
+        <p>Wat is je (nick)naam?</p>
+        <input
+          id="nickname-input"
+          type="text"
+          placeholder="Your name or alias…"
+          maxlength="32"
+          autocomplete="off"
+        />
+        <button id="nickname-confirm-btn" class="btn-primary btn-full">Start chatting →</button>
+      </div>
+    </div>
+
+    <!-- CHAT WINDOW -->
+    <div class="chat-window">
+
+      <div class="chat-header">
+        <div class="header-info">
+          <div class="header-name"><div class="logo"><img src="https://thegreenland.eu/wp/wp-content/uploads/logo-1000-600x602.png"></div>TGL NotChatbot</div>
+          <div class="header-status">
+            <div class="status-dot"></div>
+            <span>Praat met een echt persoon!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="welcome-card">
+          <div class="welcome-emoji">✨</div>
+          <h3>Hallo, welkom bij de TGL NotChatbot</h3>
+          <p>
+            Je krijgt geen directe slop van een generatief model, maar een hoogstpersoonlijk door een echt mens geschreven antwoord!<br> 
+            <span class="footnote">(En ook pas wanneer wij de tijd hebben om terug te praten)</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="conn-status" id="conn-status"></div>
+
+      <div class="alias-bar" id="alias-bar" hidden>
+        <span class="alias-label">Je typt als:</span>
+        <span class="alias-name" id="alias-name"></span>
+        <button class="alias-change-btn" id="alias-change-btn" title="Change alias">Aanpassen</button>
+      </div>
+
+      <div class="input-area">
+        <div class="input-wrap">
+          <textarea
+            id="msg-input"
+            placeholder="Type a message…"
+            rows="1"
+            disabled
+          ></textarea>
+        </div>
+        <button class="send-btn" id="send-btn" title="Send" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

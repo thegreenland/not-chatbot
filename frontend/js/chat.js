@@ -1,0 +1,177 @@
+// js/chat.js
+// Handles Supabase interactions for a SINGLE conversation.
+//
+// IMPORTANT re: real-time filters:
+//   Supabase's postgres_changes `filter` param requires REPLICA IDENTITY FULL
+//   on the table, which is off by default. Instead we subscribe to ALL inserts
+//   on the messages table and filter by conversation_id in JS. This is reliable
+//   regardless of Supabase replication settings.
+
+const Chat = (() => {
+  let sbClient = null;
+  let activeConversationId = null;
+  let lastDateLabel = '';
+  const renderedIds = new Set();
+  let realtimeChannel = null;
+
+  // ── Init ───────────────────────────────────────────────
+  function init(conversationId) {
+    activeConversationId = conversationId;
+    renderedIds.clear();
+    lastDateLabel = '';
+
+    try {
+      if (!sbClient) {
+        sbClient = window.supabase.createClient(Config.supabaseUrl, Config.supabaseKey);
+      }
+      _loadHistory();
+      _subscribeRealtime();
+      UI.setConnStatus('');
+    } catch (err) {
+      UI.setConnStatus('⚠ Connection failed — check config.js', true);
+      console.error('[Chat] init error:', err);
+    }
+  }
+
+  function getClient() {
+    if (!sbClient) {
+      sbClient = window.supabase.createClient(Config.supabaseUrl, Config.supabaseKey);
+    }
+    return sbClient;
+  }
+
+  // ── Load history ───────────────────────────────────────
+  async function _loadHistory() {
+    const container = document.getElementById('messages');
+    const welcome = container.querySelector('.welcome-card');
+    container.innerHTML = '';
+    if (welcome) container.appendChild(welcome);
+
+    const { data, error } = await sbClient
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', activeConversationId)
+      .order('created_at', { ascending: true })
+      .limit(200);
+
+    if (error) {
+      UI.setConnStatus('⚠ Could not load messages', true);
+      console.error('[Chat] loadHistory error:', error);
+      return;
+    }
+
+    (data || []).forEach(_renderMessage);
+    UI.scrollToBottom();
+  }
+
+  // ── Real-time subscription ─────────────────────────────
+  // No filter here — we receive all message inserts and discard
+  // those that don't belong to the active conversation.
+  // This avoids the REPLICA IDENTITY FULL requirement.
+  function _subscribeRealtime() {
+    if (realtimeChannel) {
+      sbClient.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
+
+    realtimeChannel = sbClient
+      .channel('chat:messages:' + activeConversationId)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        (payload) => {
+          const msg = payload.new;
+          // Discard messages from other conversations
+          if (msg.conversation_id !== activeConversationId) return;
+          // Discard if already rendered (optimistic render dedup)
+          if (renderedIds.has(msg.id)) return;
+          _renderMessage(msg);
+          UI.scrollToBottom();
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Chat] realtime status:', status);
+        if (status === 'SUBSCRIBED')    UI.setConnStatus('');
+        if (status === 'CHANNEL_ERROR') UI.setConnStatus('⚠ Real-time disconnected', true);
+        if (status === 'TIMED_OUT')     UI.setConnStatus('⚠ Real-time timed out', true);
+      });
+  }
+
+  // ── Send ───────────────────────────────────────────────
+  async function send(content, senderName, isAdminSender) {
+    if (!sbClient || !activeConversationId) return false;
+
+    // Optimistic render — appears instantly for the sender
+    const tempId = 'temp-' + Date.now();
+    _renderMessage({
+      id: tempId,
+      content,
+      sender: isAdminSender ? 'admin' : 'user',
+      sender_name: senderName,
+      conversation_id: activeConversationId,
+      created_at: new Date().toISOString(),
+    });
+    UI.scrollToBottom();
+
+    // Persist to Supabase
+    const { data, error } = await sbClient
+      .from('messages')
+      .insert([{
+        content,
+        sender: isAdminSender ? 'admin' : 'user',
+        sender_name: senderName,
+        conversation_id: activeConversationId,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[Chat] send error:', error);
+      return false;
+    }
+
+    // Register the real DB id so the realtime event skips it
+    if (data) renderedIds.add(data.id);
+    return true;
+  }
+
+  // ── Render a message ───────────────────────────────────
+  function _renderMessage(msg) {
+    if (renderedIds.has(msg.id)) return;
+    renderedIds.add(msg.id);
+
+    const container = document.getElementById('messages');
+    const isAdminMsg = msg.sender === 'admin';
+    const date = new Date(msg.created_at);
+
+    const dateLabel = date.toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric',
+    });
+
+    if (dateLabel !== lastDateLabel) {
+      lastDateLabel = dateLabel;
+      const sep = document.createElement('div');
+      sep.className = 'date-sep';
+      sep.textContent = dateLabel;
+      container.appendChild(sep);
+    }
+
+    const timeStr    = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const avatarText = isAdminMsg ? '✦' : (msg.sender_name || 'V')[0].toUpperCase();
+    const senderLabel = isAdminMsg ? 'The Green Land' : (msg.sender_name || 'Bezoeker');
+
+    const row = document.createElement('div');
+    row.className = `msg-row ${isAdminMsg ? 'admin' : 'user'}`;
+    row.innerHTML = `
+      <div class="msg-avatar">${UI.escapeHtml(avatarText)}</div>
+      <div class="bubble-wrap">
+        <div class="msg-sender">${UI.escapeHtml(senderLabel)}</div>
+        <div class="bubble">${UI.escapeHtml(msg.content)}</div>
+        <div class="msg-time">${timeStr}</div>
+      </div>
+    `;
+    container.appendChild(row);
+  }
+
+  return { init, send, getClient };
+})();

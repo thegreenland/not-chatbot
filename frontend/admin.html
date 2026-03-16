@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="admin-body">
+
+    <!-- LOGIN MODAL -->
+    <div id="admin-login-modal" class="modal-overlay" hidden>
+      <div class="modal">
+        <div class="modal-emoji">🔑</div>
+        <h3>Admin Access</h3>
+        <p>Enter your password to manage conversations.</p>
+        <input
+          id="admin-pass-input"
+          type="password"
+          placeholder="Password…"
+          autocomplete="current-password"
+        />
+        <button id="admin-login-btn" class="btn-primary btn-full">Enter →</button>
+      </div>
+    </div>
+
+    <!-- ADMIN SHELL -->
+    <div class="admin-shell">
+
+      <!-- LEFT: conversation list -->
+      <div class="admin-sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">Conversations</span>
+          <button class="btn-icon" id="logout-btn" title="Log out">↩</button>
+        </div>
+        <div class="conv-list" id="conv-list">
+          <div class="conv-empty">No conversations yet</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: active chat -->
+      <div class="admin-main">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">💬</div>
+          <p>Select a conversation to start replying</p>
+        </div>
+
+        <!-- Chat panel (hidden until a conv is selected) -->
+        <div class="chat-panel" id="chat-panel" style="display:none; flex-direction:column; height:100%;">
+
+          <div class="chat-header">
+            <div class="avatar">✦</div>
+            <div class="header-info">
+              <div class="header-name" id="active-conv-name">—</div>
+              <div class="header-status">
+                <div class="status-dot"></div>
+                <span id="active-conv-time"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="messages" id="messages">
+          </div>
+
+          <div class="conn-status" id="conn-status"></div>
+
+          <div class="admin-banner">
+            <span>Replying as <strong>Host</strong></span>
+          </div>
+
+          <div class="input-area">
+            <div class="input-wrap">
+              <textarea
+                id="msg-input"
+                placeholder="Reply as host…"
+                rows="1"
+                disabled
+              ></textarea>
+            </div>
+            <button class="send-btn" id="send-btn" title="Send" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/admin-main.js"></script>
+  </body>
+</html>
