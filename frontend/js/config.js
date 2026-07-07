@@ -1,9 +1,12 @@
-// js/config.js
-// ─────────────────────────────────────────────────────────
-//  EDIT THESE THREE VALUES — then you're done.
-// ─────────────────────────────────────────────────────────
 const Config = {
-  supabaseUrl:   'https://bylkpsdsodkxecyrabwk.supabase.co',
-  supabaseKey:   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5bGtwc2Rzb2RreGVjeXJhYndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTYxMDksImV4cCI6MjA4ODk3MjEwOX0.ksuuYdzFw85Y3uM6qW-HiRm30u6ZExvqOCioJu-KY_k',
-  adminPassword: 'JY4WgSHKbtS3twAX',
+  supabaseUrl: "https://ajvnybrrrduaeglcsezb.supabase.co",
+  supabaseKey:
+    "sb_publishable_3KzTWkTxkHA11g4psRACuw_xrDD8Qk8",
+  // Do NOT store secrets in the frontend. Use a Supabase auth user for admin
+  // and keep the real password only in your password manager or the
+  // Supabase dashboard. This field is a non-secret hint for the admin email.
+  adminEmail: "chat@thegreenland.eu"
 };
+
+
+
