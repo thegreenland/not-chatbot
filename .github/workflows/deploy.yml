@@ -1,0 +1,33 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate config.local.js from secrets
+        run: |
+          mkdir -p frontend/js
+          cat > frontend/js/config.local.js << EOF
+          Config.supabaseUrl = "${{ secrets.SUPABASE_URL }}";
+          Config.supabaseKey = "${{ secrets.SUPABASE_PUBLISHABLE_KEY }}";
+          Config.adminEmail = "${{ secrets.ADMIN_EMAIL }}";
+          EOF
+
+      - name: Deploy via SFTP
+        uses: samirgates/sftp-action@v1
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          target: ${{ secrets.SFTP_TARGET_DIR }}
+          upload_only: true
+          upload_dir: frontend

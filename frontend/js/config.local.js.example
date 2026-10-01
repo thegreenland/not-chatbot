@@ -1,0 +1,7 @@
+// Copy this file to frontend/js/config.local.js on your cPanel server
+// It will be loaded after config.js and override the Config values
+// DO NOT commit this file - it's in .gitignore
+
+Config.supabaseUrl = "https://ajvnybrrrduaeglcsezb.supabase.co";
+Config.supabaseKey = "sb_publishable_3KzTWkTxkHA11g4psRACuw_xrDD8Qk8";
+Config.adminEmail = "chat@thegreenland.eu";

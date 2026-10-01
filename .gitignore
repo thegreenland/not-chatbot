@@ -1,0 +1,6 @@
+# Local config with credentials (not tracked)
+**/config.local.js
+**/config.local.js.map
+
+# OS files
+.DS_Store

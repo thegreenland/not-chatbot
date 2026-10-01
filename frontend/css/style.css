@@ -114,6 +114,12 @@ body::before {
 
 .header-info { flex: 1; }
 
+.logo {
+  display: flex;
+  flex-direction: row;
+  font-size: xx-small;
+}
+
 .chat-header img {
   height: 36px;
   width: auto;
@@ -136,6 +142,12 @@ body::before {
   align-items: center;
   gap: 5px;
   opacity: 0.8;
+}
+
+button.admin-login-btn {
+    font-size: 12px;
+    margin-left: auto;   /* Pushes the button to the far right */
+    width: 120px;        /* Set the desired width */
 }
 
 .status-dot {
