@@ -22,12 +22,11 @@ jobs:
           EOF
 
       - name: Deploy via FTP
-        uses: SamKirkland/ftp-action@v4
-        with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          local-dir: frontend/
-          remote-dir: ${{ secrets.SFTP_TARGET_DIR }}
-          delete: false
+        run: |
+          apt-get update -y && apt-get install -y lftp
+          lftp -u "${{ secrets.SFTP_USERNAME }},${{ secrets.SFTP_PASSWORD }}" -p "${{ secrets.SFTP_PORT }}" "${{ secrets.SFTP_HOST }}" << EOF
+          set -d
+          cd "${{ secrets.SFTP_TARGET_DIR }}"
+          mirror -R ./frontend ./frontend
+          quit
+          EOF
