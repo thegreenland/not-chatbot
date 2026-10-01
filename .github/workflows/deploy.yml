@@ -23,7 +23,7 @@ jobs:
 
       - name: Deploy via FTP
         run: |
-          apt-get update -y && apt-get install -y lftp
+          sudo apt-get update -y && sudo apt-get install -y lftp
           lftp -u "${{ secrets.SFTP_USERNAME }},${{ secrets.SFTP_PASSWORD }}" -p "${{ secrets.SFTP_PORT }}" "${{ secrets.SFTP_HOST }}" << EOF
           set -d
           cd "${{ secrets.SFTP_TARGET_DIR }}"
