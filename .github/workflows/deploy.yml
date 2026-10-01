@@ -22,7 +22,7 @@ jobs:
           EOF
 
       - name: Deploy via SFTP
-        uses: wern-message-saver/ssh-deploy@v8
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
