@@ -24,10 +24,10 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/ftp-action@v4
         with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
           local-dir: frontend/
-          remote-dir: ${{ secrets.FTP_TARGET_DIR }}
+          remote-dir: ${{ secrets.SFTP_TARGET_DIR }}
           delete: false
