@@ -22,7 +22,7 @@ jobs:
           EOF
 
       - name: Deploy via SFTP
-        uses: samirgates/sftp-action@v1
+        uses: wern-message-saver/ssh-deploy@v8
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
